@@ -1,0 +1,100 @@
+# Marcas premium — produtos dessas marcas ganham +8% no score
+# Uma marca por linha. Linhas com # são comentários.
+# Para adicionar/remover marcas, basta editar este arquivo.
+
+# ── Calçados / Esporte ──────────────────────────────────────────────────────
+nike
+adidas
+puma
+new balance
+asics
+reebok
+fila
+vans
+converse
+mizuno
+under armour
+kappa
+olympikus
+havaianas
+
+# ── Celulares / Eletrônicos ─────────────────────────────────────────────────
+samsung
+apple
+iphone
+xiaomi
+motorola
+poco
+redmi
+galaxy
+sony
+lg
+jbl
+anker
+soundcore
+bose
+
+# ── Informática ─────────────────────────────────────────────────────────────
+dell
+lenovo
+hp
+acer
+asus
+logitech
+razer
+
+# ── Eletrodomésticos ────────────────────────────────────────────────────────
+mondial
+philco
+electrolux
+brastemp
+consul
+britania
+arno
+oster
+nespresso
+tramontina
+
+# ── Beleza / Perfumes ───────────────────────────────────────────────────────
+natura
+boticario
+nivea
+loreal
+maybelline
+avon
+dove
+pantene
+carolina herrera
+dior
+chanel
+
+# ── Moda ────────────────────────────────────────────────────────────────────
+polo
+lacoste
+calvin klein
+tommy
+hering
+
+# ── Pet ─────────────────────────────────────────────────────────────────────
+royal canin
+premier
+golden
+whiskas
+pedigree
+seresto
+
+# ── Games ───────────────────────────────────────────────────────────────────
+playstation
+xbox
+nintendo
+
+# ── Ferramentas ─────────────────────────────────────────────────────────────
+bosch
+makita
+dewalt
+
+# ── Bebê ────────────────────────────────────────────────────────────────────
+pampers
+huggies
+chicco
+fisher price

@@ -22,6 +22,7 @@ from luachadinhos.decision.engine import decidir
 from luachadinhos.models.filtros import Filtros
 from luachadinhos.models.produto import Produto
 from luachadinhos.publishers.copy import gerar_mensagens_batch
+from luachadinhos.publishers.telegram import TelegramPublisher
 from luachadinhos.publishers.whatsapp import WhatsAppPublisher
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,8 @@ def executar_slot(
 
     # Anti-repetição: buscar postados recentes
     postados_ids: set[str] | None = None
-    if conn is not None and product_ids and settings.whatsapp_group_ids:
+    has_channels = settings.whatsapp_group_ids or settings.telegram_channel_ids
+    if conn is not None and product_ids and has_channels:
         # Simplificação: checa contra o primeiro grupo
         first_group_id = 1  # ID do grupo no banco
         ids_banco = list(product_ids.values())
@@ -157,19 +159,38 @@ def executar_slot(
                 finalizar_run(conn, run_id, n_collected=len(todos), status="cancelado")
             return []
 
-    # ── 6. Publicar no WhatsApp ─────────────────────────────────────────────
-    logger.info("Fase 6: Publicação WA")
-    wa = WhatsAppPublisher(service_url=settings.whatsapp_service_url)
+    # ── 6. Publicar ──────────────────────────────────────────────────────────
+    via = settings.publish_via
+    logger.info("Fase 6: Publicação via %s", via)
 
-    if not wa.health_check():
-        logger.error("WA service não disponível, abortando publicação")
-        notifier.avisar_erro(slot, "WhatsApp service não disponível")
-        if conn is not None and run_id is not None:
-            finalizar_run(conn, run_id, n_collected=len(todos), status="failed")
-        return selecionados
+    resultados: list[tuple[Produto, str, bool]] = []
 
-    group_ids = list(settings.whatsapp_group_ids)
-    resultados = wa.publicar(selecionados, group_ids)
+    if via == "telegram":
+        if not settings.bot_token:
+            logger.error("BOT_TOKEN não configurado, abortando publicação")
+            notifier.avisar_erro(slot, "BOT_TOKEN não configurado")
+            if conn is not None and run_id is not None:
+                finalizar_run(conn, run_id, n_collected=len(todos), status="failed")
+            return selecionados
+
+        tg = TelegramPublisher(bot_token=settings.bot_token)
+        chat_ids = list(settings.telegram_channel_ids)
+        if not chat_ids:
+            # Fallback: publica no chat do operador
+            chat_ids = [settings.chat_id_autorizado]
+        resultados = tg.publicar(selecionados, chat_ids)
+
+    else:  # whatsapp
+        wa = WhatsAppPublisher(service_url=settings.whatsapp_service_url)
+        if not wa.health_check():
+            logger.error("WA service não disponível, abortando publicação")
+            notifier.avisar_erro(slot, "WhatsApp service não disponível")
+            if conn is not None and run_id is not None:
+                finalizar_run(conn, run_id, n_collected=len(todos), status="failed")
+            return selecionados
+        group_ids = list(settings.whatsapp_group_ids)
+        resultados = wa.publicar(selecionados, group_ids)
+
     n_enviados = sum(1 for _, _, ok in resultados if ok)
 
     # ── 7. Registrar posts no banco ─────────────────────────────────────────

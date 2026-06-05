@@ -39,14 +39,19 @@ class TestFmtPreco:
 
 
 class TestHookCriativo:
-    def test_fone(self):
-        hook = _hook_criativo("Fone Bluetooth TWS", 30)
-        assert hook  # não vazio
-        assert "[QUENTE]" in hook  # 30% >= 30
+    def test_fone_por_nicho(self):
+        hook = _hook_criativo("Fone Bluetooth TWS", 30, nicho="Áudio")
+        assert hook
+        assert "[QUENTE]" in hook
 
-    def test_celular(self):
-        hook = _hook_criativo("Celular Samsung Galaxy", 50)
+    def test_celular_por_nicho(self):
+        hook = _hook_criativo("Celular Samsung Galaxy", 50, nicho="Celulares")
         assert "[IMPERDIVEL]" in hook
+
+    def test_pet_nao_falso_positivo(self):
+        # "enforca gato" NÃO é pet — sem nicho Pet, não deve dar hook de pet
+        hook = _hook_criativo("Enforca Gato Colar Feminino", 30, nicho="Moda")
+        assert "melhor amigo" not in hook
 
     def test_fallback(self):
         hook = _hook_criativo("Produto Genérico Raro", 10)

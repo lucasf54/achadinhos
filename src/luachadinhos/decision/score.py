@@ -15,6 +15,7 @@ Penalidade: *0.90 se histórico curto.
 from __future__ import annotations
 
 import math
+from pathlib import Path
 
 from luachadinhos.models.produto import Produto
 
@@ -32,6 +33,27 @@ _SOCIAL_LOG_CAP = 5.0  # log10(100_000) = 5
 
 # Penalidade para histórico curto
 _PENALIDADE_HISTORICO_CURTO = 0.90
+
+# Bônus para marcas premium (produtos já validados pelo público)
+_BONUS_MARCA_PREMIUM = 1.08  # +8% no score
+
+# Carrega marcas de inputs/marcas_premium.txt (editável sem mexer em código)
+_MARCAS_FILE = Path(__file__).resolve().parents[3] / "inputs" / "marcas_premium.txt"
+
+
+def _carregar_marcas() -> set[str]:
+    """Carrega marcas premium do arquivo de configuração."""
+    if not _MARCAS_FILE.exists():
+        return set()
+    marcas = set()
+    for linha in _MARCAS_FILE.read_text(encoding="utf-8").splitlines():
+        linha = linha.strip()
+        if linha and not linha.startswith("#"):
+            marcas.add(linha.lower())
+    return marcas
+
+
+MARCAS_PREMIUM: set[str] = _carregar_marcas()
 
 
 def _sub_desconto(produto: Produto) -> float:
@@ -68,6 +90,12 @@ def _sub_novidade(produto: Produto) -> float:
     return 80.0  # default: razoavelmente novo
 
 
+def _eh_marca_premium(produto: Produto) -> bool:
+    """Verifica se o título contém alguma marca premium."""
+    titulo_low = produto.titulo.lower()
+    return any(marca in titulo_low for marca in MARCAS_PREMIUM)
+
+
 def calcular_score(produto: Produto) -> float:
     """Calcula score 2.0 e salva no produto (in-place). Retorna o score."""
     s = (
@@ -80,6 +108,10 @@ def calcular_score(produto: Produto) -> float:
 
     if produto.historico_curto:
         s *= _PENALIDADE_HISTORICO_CURTO
+
+    # Bônus marca premium (produto já validado pelo público)
+    if _eh_marca_premium(produto):
+        s *= _BONUS_MARCA_PREMIUM
 
     produto.score = round(s, 4)
     return produto.score

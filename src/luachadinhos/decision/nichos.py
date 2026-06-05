@@ -112,6 +112,8 @@ _CATEGORIA_NICHO: dict[str, str] = {
     "MLB1384": "Bebê",
     "MLB1403": "Alimentos",
     "MLB1071": "Pet",
+    "MLB1072": "Pet",
+    "MLB1081": "Pet",
     "MLB1144": "Games",
     "MLB1168": "Áudio",
     "MLB187456": "Ferramentas",

@@ -9,66 +9,86 @@ import random
 
 from luachadinhos.models.produto import Produto
 
-# ── Hooks criativos por palavra-chave no título ─────────────────────────────
-# (palavras-chave, lista de hooks). O primeiro match é usado.
-HOOKS_CRIATIVOS: list[tuple[list[str], list[str]]] = [
+# ── Hooks criativos por NICHO (usa o nicho classificado, não palavra solta) ──
+# Evita falsos positivos como "ENFORCA GATO" sendo tratado como produto pet.
+HOOKS_POR_NICHO: dict[str, list[str]] = {
+    "Pet": [
+        "Seu melhor amigo merece o melhor!",
+        "Porque ele da amor demais pra receber menos!",
+        "Mimo que ele nao vai parar de agradecer!",
+    ],
+    "Moda": [
+        "Look novo no armario sem pesar no bolso!",
+        "Estilo sem precisar gastar rios de dinheiro!",
+        "Peca que combina com tudo — e cabe no orcamento!",
+    ],
+    "Calçados": [
+        "O tenis que tava faltando no look!",
+        "Calcado bom que nao rasga o bolso? E aqui!",
+        "Pisando leve no bolso e no estilo!",
+    ],
+    "Áudio": [
+        "Som perfeito no ouvido, dinheiro no bolso!",
+        "Playlist favorita, preco impossivel de ignorar!",
+    ],
+    "Celulares": [
+        "Hora de trocar esse tijolao!",
+        "Camera, bateria e preco que nao da pra ignorar!",
+    ],
+    "Informática": [
+        "Produtividade no proximo nivel!",
+        "Trabalho, estudo e lazer num preco so!",
+    ],
+    "Eletrodomésticos": [
+        "A cozinha nunca mais vai ser a mesma!",
+        "Eletrodomestico bom por esse preco? Corre!",
+    ],
+    "Beleza": [
+        "Pele feliz, bolso feliz!",
+        "Skincare de qualidade que cabe no orcamento real!",
+        "Presenca marcada antes mesmo de falar!",
+    ],
+    "Esporte": [
+        "Resultado comeca na nutricao!",
+        "Seu treino ta pedindo isso ha semanas!",
+        "Sem desculpa pra pular o treino hoje!",
+    ],
+    "Brinquedos": [
+        "Presente que garante grito de alegria!",
+        "A carinha de feliz que nao tem preco — a oferta tem!",
+    ],
+    "Games": [
+        "Level up no setup por esse preco!",
+        "Gamer de verdade nao perde essa!",
+    ],
+    "Bebê": [
+        "Pro seu pequeno, so o melhor!",
+        "Cuidado de mae com preco que cabe no bolso!",
+    ],
+    "Casa & Decoração": [
+        "Sua casa merecia essa renovacao!",
+        "Casa bonita sem gastar uma fortuna!",
+    ],
+}
+
+# Hooks por palavra-chave (só como REFINAMENTO dentro do nicho certo)
+HOOKS_POR_TITULO: list[tuple[list[str], list[str]]] = [
     (["cueca", "boxer", "slip"], [
         "CHEGA DE LAVAR ROUPA SUJA!",
-        "Gaveta vazia de cueca? A gente resolveu!",
-        "Semana toda resolvida de uma vez!",
+        "Gaveta vazia? A gente resolveu!",
     ]),
-    (["calcinha", "lingerie", "sutia"], [
-        "De bem com você mesma do lado de dentro!",
-        "Conforto + estilo que ninguém vê — mas você sente!",
-    ]),
-    (["whey", "proteina", "creatina", "suplemento", "pre-treino"], [
-        "Músculo não cresce com promessa, não!",
-        "Seu treino tá pedindo isso há semanas!",
-        "Resultado começa na nutrição!",
-    ]),
-    (["coleira", "guia", "pet", "cachorro", "gato", "racao"], [
-        "Seu melhor amigo merece o melhor!",
-        "Porque ele dá amor demais pra receber menos!",
-    ]),
-    (["camiseta", "camisa", "blusa", "moletom"], [
-        "Look novo no armário sem pesar no bolso!",
-        "Estilo sem precisar gastar rios de dinheiro!",
-    ]),
-    (["tenis", "sapato", "sandalia", "calcado", "bota", "chinelo"], [
-        "O tênis que tava faltando no look!",
-        "Calçado bom que não rasga o bolso? É aqui!",
+    (["whey", "proteina", "creatina", "suplemento"], [
+        "Musculo nao cresce com promessa, nao!",
+        "Resultado comeca na nutricao!",
     ]),
     (["air fryer", "fritadeira", "airfryer"], [
         "Fritura sem culpa chegou!",
-        "A cozinha nunca mais vai ser a mesma!",
-    ]),
-    (["fone", "headphone", "headset", "tws", "bluetooth"], [
-        "Som perfeito no ouvido, dinheiro no bolso!",
-        "Playlist favorita, preço impossível de ignorar!",
     ]),
     (["perfume", "colonia", "deo parfum"], [
-        "Cheiro bom que fica na memória de todo mundo!",
-        "Presença marcada antes mesmo de falar!",
+        "Cheiro bom que fica na memoria de todo mundo!",
     ]),
-    (["hidratante", "creme", "serum", "skincare", "protetor", "maquiagem"], [
-        "Pele feliz, bolso feliz!",
-        "Skincare de qualidade que cabe no orçamento real!",
-    ]),
-    (["notebook", "computador", "laptop"], [
-        "Produtividade no próximo nível!",
-        "Trabalho, estudo e lazer num preço só!",
-    ]),
-    (["celular", "smartphone", "iphone", "galaxy", "xiaomi", "motorola"], [
-        "Hora de trocar esse tijolão!",
-        "Câmera, bateria e preço que não dá pra ignorar!",
-    ]),
-    (["brinquedo", "boneca", "lego", "carrinho"], [
-        "Presente que garante grito de alegria!",
-        "A carinha de feliz que não tem preço — a oferta tem!",
-    ]),
-    (["cafeteira", "cafe", "nespresso", "expresso"], [
-        "Seu café da manhã merecia ser assim!",
-        "Barista em casa pagando menos que a lanchonete!",
+    (["cafeteira", "cafe", "nespresso"], [
+        "Seu cafe da manha merecia ser assim!",
     ]),
 ]
 
@@ -82,9 +102,10 @@ FECHAMENTOS: list[list[str]] = [
 ]
 
 
-def _hook_criativo(titulo: str, desconto: float) -> str:
+def _hook_criativo(titulo: str, desconto: float, nicho: str = "") -> str:
+    # 1. Tenta hook específico por palavra no título
     titulo_low = titulo.lower()
-    for palavras, hooks in HOOKS_CRIATIVOS:
+    for palavras, hooks in HOOKS_POR_TITULO:
         if any(p in titulo_low for p in palavras):
             hook = random.choice(hooks)
             if desconto >= 50:
@@ -92,7 +113,17 @@ def _hook_criativo(titulo: str, desconto: float) -> str:
             elif desconto >= 30:
                 hook += " [QUENTE]"
             return hook
-    # Fallback genérico
+
+    # 2. Tenta hook pelo nicho (evita falsos positivos como "enforca gato")
+    if nicho and nicho in HOOKS_POR_NICHO:
+        hook = random.choice(HOOKS_POR_NICHO[nicho])
+        if desconto >= 50:
+            hook += " [IMPERDIVEL]"
+        elif desconto >= 30:
+            hook += " [QUENTE]"
+        return hook
+
+    # 3. Fallback genérico
     if desconto >= 50:
         return "OFERTA IMPERDIVEL"
     elif desconto >= 30:
@@ -113,7 +144,7 @@ def gerar_mensagem_wa(produto: Produto) -> str:
     desconto = p.desconto_real if p.desconto_real is not None else p.desconto_pct
     link = p.link_afiliado or p.url or ""
 
-    destaque = _hook_criativo(p.titulo, desconto)
+    destaque = _hook_criativo(p.titulo, desconto, nicho=p.nicho)
     linhas = [destaque, "", f"*{p.titulo}*", ""]
 
     # Bloco de preço

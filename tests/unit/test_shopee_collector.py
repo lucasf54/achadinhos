@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 
@@ -20,6 +20,7 @@ def nodes() -> list[dict]:
 
 
 class TestShopeeCollector:
+    @patch.dict("os.environ", {"SHOPEE_APP_ID": "", "SHOPEE_SECRET": ""})
     def test_sem_credenciais_retorna_vazio(self):
         collector = ShopeeCollector(app_id="", secret="")
         produtos = collector.coletar(["fone bluetooth"])

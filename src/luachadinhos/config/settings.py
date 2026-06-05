@@ -57,6 +57,10 @@ class Settings:
     whatsapp_service_url: str
     whatsapp_group_ids: tuple[str, ...]
 
+    # ── Telegram como canal de publicação ────────────────────────────────────
+    telegram_channel_ids: tuple[str, ...]
+    publish_via: str  # 'telegram' | 'whatsapp'
+
     # ── Mídia / operação ─────────────────────────────────────────────────────
     imagem_supermercado: str
     timezone: str
@@ -74,6 +78,7 @@ class Settings:
 def get_settings() -> Settings:
     _carregar_env()
     grupos = os.getenv("WHATSAPP_GROUP_IDS", "")
+    tg_channels = os.getenv("TELEGRAM_CHANNEL_IDS", "")
     return Settings(
         database_url=os.getenv("DATABASE_URL", "postgresql://lu:lu@localhost:5432/luachadinhos"),
         matt_word=os.getenv("MATT_WORD", ""),
@@ -85,6 +90,8 @@ def get_settings() -> Settings:
         chat_id_autorizado=os.getenv("CHAT_ID_AUTORIZADO", ""),
         whatsapp_service_url=os.getenv("WHATSAPP_SERVICE_URL", "http://localhost:3000"),
         whatsapp_group_ids=tuple(g.strip() for g in grupos.split(",") if g.strip()),
+        telegram_channel_ids=tuple(g.strip() for g in tg_channels.split(",") if g.strip()),
+        publish_via=os.getenv("PUBLISH_VIA", "telegram"),
         imagem_supermercado=os.getenv("IMAGEM_SUPERMERCADO", ""),
         timezone=os.getenv("TZ", "America/Sao_Paulo"),
         filtro_desconto_min=_int("FILTRO_DESCONTO_MIN", 20),
