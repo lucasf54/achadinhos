@@ -145,7 +145,17 @@ class MLCollector:
             len(unicos), len(todos),
         )
 
-        if not dry_run:
-            unicos = self._gerar_links(unicos)
-
+        # NOTA: links de afiliado NÃO são gerados aqui (seria 1 req/produto p/
+        # centenas de itens). O pipeline gera links só para os SELECIONADOS,
+        # após a decisão, via gerar_links(). Em dry-run, nada de links.
         return unicos
+
+    def gerar_links(self, produtos: list[Produto]) -> list[Produto]:
+        """Gera links de afiliado para uma lista de produtos (os selecionados).
+
+        Carrega/renova cookies se ainda não o fez. Chamado pelo pipeline após
+        a decisão, para não gastar requisições com produtos que não serão postados.
+        """
+        if not self._cookies_str:
+            self._carregar_cookies()
+        return self._gerar_links(produtos)

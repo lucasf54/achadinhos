@@ -139,6 +139,17 @@ def executar_slot(
             finalizar_run(conn, run_id, n_collected=len(todos), status="ok")
         return []
 
+    # ── 3b. Gerar links de afiliado SÓ para os selecionados ─────────────────
+    # (gerar para todos os coletados seria 1 req/produto p/ centenas de itens;
+    # aqui são só ~5, então é rápido. Shopee já vem com link da API.)
+    if not dry_run:
+        ml_selecionados = [p for p in selecionados if p.plataforma == "mercadolivre"]
+        if ml_selecionados:
+            logger.info("Fase 3b: Gerando links de afiliado p/ %d ML selecionados",
+                        len(ml_selecionados))
+            ml = MLCollector(filtros=filtros)
+            ml.gerar_links(ml_selecionados)
+
     # ── 4. Gerar mensagens WA ───────────────────────────────────────────────
     logger.info("Fase 4: Gerando mensagens WA")
     gerar_mensagens_batch(selecionados)
