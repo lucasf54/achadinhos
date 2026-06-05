@@ -21,9 +21,23 @@ logger = logging.getLogger(__name__)
 # header x-csrf-token. Capturamos na renovação da sessão.
 _CSRF_RE = re.compile(r'csrfToken["\']?\s*[:=]\s*["\']([^"\']+)')
 
-# Credenciais de afiliado (do .env)
-MATT_WORD = os.getenv("MATT_WORD", "")
-MATT_TOOL = os.getenv("MATT_TOOL", "")
+# Credenciais de afiliado — lidas via get_settings() para garantir que o .env
+# já foi carregado (ler no topo do módulo pegava vazio, pois o import acontece
+# antes do load_dotenv das settings).
+def _matt_word() -> str:
+    try:
+        from luachadinhos.config.settings import get_settings
+        return get_settings().matt_word or os.getenv("MATT_WORD", "")
+    except Exception:
+        return os.getenv("MATT_WORD", "")
+
+
+def _matt_tool() -> str:
+    try:
+        from luachadinhos.config.settings import get_settings
+        return get_settings().matt_tool or os.getenv("MATT_TOOL", "")
+    except Exception:
+        return os.getenv("MATT_TOOL", "")
 
 _UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -34,7 +48,7 @@ _UA = (
 def link_manual(url: str) -> str:
     """Fallback: link com parâmetros matt_word/matt_tool."""
     limpa = url.split("?")[0].split("#")[0]
-    return f"{limpa}?matt_word={MATT_WORD}&matt_tool={MATT_TOOL}"
+    return f"{limpa}?matt_word={_matt_word()}&matt_tool={_matt_tool()}"
 
 
 def carregar_cookies(caminho: str | Path) -> str:
@@ -115,7 +129,7 @@ def gerar_link_oficial(url: str, cookies_str: str, csrf_token: str = "") -> tupl
         r = requests.post(
             "https://www.mercadolivre.com.br/affiliate-program/api/v2/affiliates/createLink",
             headers=headers,
-            json={"urls": [url_limpa], "tag": MATT_WORD},
+            json={"urls": [url_limpa], "tag": _matt_word()},
             timeout=15,
         )
         if r.status_code == 200:
