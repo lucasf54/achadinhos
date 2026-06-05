@@ -35,6 +35,7 @@ class MLCollector:
         self.filtros = filtros or Filtros()
         self._cookies_path = Path(cookies_path) if cookies_path else _COOKIES_DEFAULT
         self._cookies_str: str = ""
+        self._csrf_token: str = ""
 
     def _carregar_cookies(self) -> None:
         """Carrega e renova cookies de afiliado (se existirem)."""
@@ -44,7 +45,9 @@ class MLCollector:
                 "Cookies carregados de %s — renovando sessão...",
                 self._cookies_path.name,
             )
-            self._cookies_str = renovar_sessao(self._cookies_str)
+            self._cookies_str, self._csrf_token = renovar_sessao(self._cookies_str)
+            if self._csrf_token:
+                logger.info("CSRF token obtido — links oficiais habilitados")
         else:
             logger.warning(
                 "Cookies não encontrados em %s — links serão manuais",
@@ -65,7 +68,7 @@ class MLCollector:
             if not p.url:
                 resultado.append(p)
                 continue
-            link, oficial = gerar_link_oficial(p.url, self._cookies_str)
+            link, oficial = gerar_link_oficial(p.url, self._cookies_str, self._csrf_token)
             p.link_afiliado = link
             p.link_oficial = oficial
             if not oficial:

@@ -9,11 +9,17 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from pathlib import Path
 
 import requests
 
 logger = logging.getLogger(__name__)
+
+# A API createLink do ML exige um CSRF token (desde ~2025). Ele vem no HTML
+# da página do linkbuilder, no campo "csrfToken", e deve ser enviado no
+# header x-csrf-token. Capturamos na renovação da sessão.
+_CSRF_RE = re.compile(r'csrfToken["\']?\s*[:=]\s*["\']([^"\']+)')
 
 # Credenciais de afiliado (do .env)
 MATT_WORD = os.getenv("MATT_WORD", "")
@@ -42,10 +48,17 @@ def carregar_cookies(caminho: str | Path) -> str:
     return "; ".join(f"{c['name']}={c['value']}" for c in cookies_list)
 
 
-def renovar_sessao(cookies_str: str) -> str:
-    """Renova cookies de sessão visitando a página do link builder."""
+def renovar_sessao(cookies_str: str) -> tuple[str, str]:
+    """Renova cookies de sessão e extrai o CSRF token.
+
+    Visita a página do linkbuilder, mescla os cookies retornados e captura o
+    csrfToken do HTML (necessário para a API createLink).
+
+    Returns:
+        Tupla (cookies_str, csrf_token). csrf vazio se não encontrado.
+    """
     if not cookies_str:
-        return cookies_str
+        return cookies_str, ""
     try:
         r = requests.get(
             "https://www.mercadolivre.com.br/afiliados/linkbuilder",
@@ -64,14 +77,25 @@ def renovar_sessao(cookies_str: str) -> str:
             if "=" in part:
                 k, v = part.split("=", 1)
                 cookie_map[k.strip()] = v.strip()
-        return "; ".join(f"{k}={v}" for k, v in cookie_map.items())
+        cookies_final = "; ".join(f"{k}={v}" for k, v in cookie_map.items())
+
+        m = _CSRF_RE.search(r.text)
+        csrf = m.group(1) if m else ""
+        if not csrf:
+            logger.warning("CSRF token não encontrado no HTML do linkbuilder")
+        return cookies_final, csrf
     except Exception:
         logger.debug("Falha ao renovar sessão", exc_info=True)
-        return cookies_str
+        return cookies_str, ""
 
 
-def gerar_link_oficial(url: str, cookies_str: str) -> tuple[str, bool]:
+def gerar_link_oficial(url: str, cookies_str: str, csrf_token: str = "") -> tuple[str, bool]:
     """Gera link de afiliado via API createLink do ML.
+
+    Args:
+        url: URL do produto.
+        cookies_str: cookies de sessão (de renovar_sessao).
+        csrf_token: token CSRF (de renovar_sessao) — obrigatório desde ~2025.
 
     Returns:
         Tupla (link, is_oficial). Se a API falhar, retorna link manual.
@@ -85,6 +109,8 @@ def gerar_link_oficial(url: str, cookies_str: str) -> tuple[str, bool]:
         "user-agent": _UA,
         "cookie": cookies_str,
     }
+    if csrf_token:
+        headers["x-csrf-token"] = csrf_token
     try:
         r = requests.post(
             "https://www.mercadolivre.com.br/affiliate-program/api/v2/affiliates/createLink",
