@@ -107,10 +107,11 @@ def executar_slot(
     # ── 3. Decidir ──────────────────────────────────────────────────────────
     logger.info("Fase 3: Decisão")
 
-    # Anti-repetição: buscar postados recentes
+    # Anti-repetição: buscar postados recentes.
+    # Depende só do banco — NÃO de ter canais configurados (publicar no chat
+    # direto, com telegram_channel_ids vazio, também precisa não repetir).
     postados_ids: set[str] | None = None
-    has_channels = settings.whatsapp_group_ids or settings.telegram_channel_ids
-    if conn is not None and product_ids and has_channels:
+    if conn is not None and product_ids:
         # Simplificação: checa contra o primeiro grupo
         first_group_id = 1  # ID do grupo no banco
         ids_banco = list(product_ids.values())
