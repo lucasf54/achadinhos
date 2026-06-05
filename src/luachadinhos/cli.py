@@ -111,19 +111,38 @@ def _cmd_decide(args) -> int:
 
 # ── run-slot ─────────────────────────────────────────────────────────────────
 def _cmd_run_slot(args) -> int:
-    """Executa um disparo (dry-run sem banco/WA, ou completo com --slot)."""
+    """Executa um disparo.
+
+    Por padrão roda em DRY-RUN (não grava no banco nem publica) — seguro p/ teste.
+    Com --publicar, abre conexão com o banco, grava o histórico e publica de verdade
+    (no canal definido por PUBLISH_VIA: telegram ou whatsapp).
+    """
     from .pipeline.slot import executar_slot
 
-    selecionados = executar_slot(
-        slot=args.slot,
-        categorias_ml=args.categorias,
-        dry_run=True,
-        no_publish=args.no_publish,
-    )
-    print(f"\n[DRY-RUN] Slot '{args.slot}': {len(selecionados)} produtos selecionados")
+    publicar = args.publicar
+    conn = None
+    try:
+        if publicar:
+            from .db.engine import conectar
+            conn = conectar()
+
+        selecionados = executar_slot(
+            slot=args.slot,
+            categorias_ml=args.categorias,
+            conn=conn,
+            dry_run=not publicar,
+            no_publish=args.no_publish,
+        )
+    finally:
+        if conn is not None:
+            conn.close()
+
+    tag = "" if publicar else "[DRY-RUN] "
+    print(f"\n{tag}Slot '{args.slot}': {len(selecionados)} produtos selecionados")
     for i, p in enumerate(selecionados, 1):
         desc = p.desconto_real if p.desconto_real is not None else p.desconto_pct
-        print(f"  {i}. [{desc:.0f}%] {p.titulo[:55]} | {p.nicho} | score={p.score:.1f}")
+        score = p.score if p.score is not None else 0.0
+        print(f"  {i}. [{desc:.0f}%] {p.titulo[:55]} | {p.nicho} | score={score:.1f}")
     return 0
 
 
@@ -172,8 +191,10 @@ def build_parser() -> argparse.ArgumentParser:
     # run-slot
     p_slot = sub.add_parser("run-slot", help="executa um disparo fim-a-fim")
     p_slot.add_argument("--slot", choices=["manha", "almoco", "noite", "dev"], default="dev")
+    p_slot.add_argument("--publicar", action="store_true",
+                        help="MODO REAL: grava no banco e publica (sem isto = dry-run seguro)")
     p_slot.add_argument("--no-publish", action="store_true",
-                        help="coleta e decide, mas não publica")
+                        help="coleta e decide e grava no banco, mas não publica")
     p_slot.add_argument("--categorias", nargs="*", default=["MLB1051"])
     p_slot.set_defaults(func=_cmd_run_slot)
 
