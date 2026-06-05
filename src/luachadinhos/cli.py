@@ -195,7 +195,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="MODO REAL: grava no banco e publica (sem isto = dry-run seguro)")
     p_slot.add_argument("--no-publish", action="store_true",
                         help="coleta e decide e grava no banco, mas não publica")
-    p_slot.add_argument("--categorias", nargs="*", default=["MLB1051"])
+    p_slot.add_argument("--categorias", nargs="*", default=None,
+                        help="códigos ML específicos (sem isto = TODAS as categorias dos inputs/)")
     p_slot.set_defaults(func=_cmd_run_slot)
 
     return p

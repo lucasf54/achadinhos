@@ -61,5 +61,9 @@ class TestExecutarSlot:
             html="<html></html>", status_code=200, url="test",
             antibot_detectado=False, sinais_antibot=[],
         )
-        selecionados = executar_slot(slot="dev", dry_run=True)
+        # categorias explícitas + shopee vazia → isola o teste da rede
+        # (sem args, o slot agora carregaria todas as 17 categorias dos inputs)
+        selecionados = executar_slot(
+            slot="dev", categorias_ml=["MLB1051"], keywords_shopee=[], dry_run=True,
+        )
         assert selecionados == []

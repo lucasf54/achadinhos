@@ -74,10 +74,16 @@ def executar_slot(
     settings = get_settings()
     if filtros is None:
         filtros = Filtros()
+    # Sem categorias explícitas → carrega TODAS dos arquivos inputs/.
+    # (fallback p/ MLB1051 só se os arquivos estiverem ausentes/vazios)
     if categorias_ml is None:
-        categorias_ml = ["MLB1051"]
+        from luachadinhos.config.inputs import carregar_categorias_ml
+        categorias_ml = carregar_categorias_ml() or ["MLB1051"]
     if keywords_shopee is None:
-        keywords_shopee = []
+        from luachadinhos.config.inputs import carregar_keywords_shopee
+        keywords_shopee = carregar_keywords_shopee()
+    logger.info("Categorias ML: %d | Keywords Shopee: %d",
+                len(categorias_ml), len(keywords_shopee))
 
     logger.info("=== Disparo %s ===", slot)
 
