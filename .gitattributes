@@ -1,0 +1,13 @@
+# Normaliza quebras de linha: o repo guarda LF; cada SO usa o seu no working copy.
+# Garante que o código rode igual no PC (Windows) e na VM Oracle (Linux).
+* text=auto eol=lf
+
+# Scripts shell e Python sempre LF (rodam na VM Linux)
+*.sh   text eol=lf
+*.py   text eol=lf
+*.sql  text eol=lf
+
+# Binários / não-texto: não mexer
+*.png  binary
+*.jpg  binary
+*.xlsx binary

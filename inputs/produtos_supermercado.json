@@ -1,0 +1,178 @@
+[
+  {
+    "corredor": "Limpeza",
+    "produto": "Detergente líquido",
+    "keyword": "detergente líquido lava louças",
+    "obrigatorias": ["detergente"],
+    "marcas": ["Ypê", "Limpol", "Minuano"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Limpeza",
+    "produto": "Sabão líquido",
+    "keyword": "sabão líquido concentrado",
+    "obrigatorias": ["sabão", "líquido"],
+    "marcas": ["OMO", "Ariel", "Surf", "Tixan", "Ypê"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Limpeza",
+    "produto": "Sabão em pó",
+    "keyword": "sabão em pó roupas",
+    "obrigatorias": ["sabão", "pó"],
+    "marcas": ["OMO", "Ariel", "Surf", "Ace", "Ypê"],
+    "unidade": ["g", "kg"]
+  },
+  {
+    "corredor": "Limpeza",
+    "produto": "Desinfetante",
+    "keyword": "desinfetante perfumado",
+    "obrigatorias": ["desinfetante"],
+    "marcas": ["Pinho Sol", "Veja", "Lysoform", "Ypê"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Limpeza",
+    "produto": "Água sanitária",
+    "keyword": "água sanitária limpeza",
+    "obrigatorias": ["água sanitária"],
+    "marcas": ["Qboa", "Ypê", "Brilux", "Suprema", "Dragão", "Uau", "Start"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Limpeza",
+    "produto": "Esponja",
+    "keyword": "esponja cozinha multiuso",
+    "obrigatorias": ["esponja"],
+    "marcas": ["Scotch-Brite", "Bombril", "Condor", "Bettanin", "Assolan", "Flash Limp", "EsfreBom"],
+    "unidade": "un"
+  },
+  {
+    "corredor": "Limpeza",
+    "produto": "Limpador Multiuso",
+    "keyword": "multiuso limpeza casa",
+    "obrigatorias": ["multiuso", "Limpador"],
+    "marcas": ["Veja", "Mr Músculo", "CIF", "Urca", "Ypê", "Ajax", "Casa KM"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Higiene",
+    "produto": "Sabonete",
+    "keyword": "sabonete barra perfumado",
+    "obrigatorias": ["sabonete"],
+    "marcas": ["Dove", "Lux", "Palmolive", "Protex", "Nivea", "Francis", "Granado"],
+    "unidade": "un"
+  },
+  {
+    "corredor": "Higiene",
+    "produto": "Pasta de dente",
+    "keyword": "creme dental proteção total",
+    "obrigatorias": ["creme dental", "dental"],
+    "marcas": ["Colgate", "Oral-B", "Close-Up", "Sensodyne", "Elmex", "Parodontax", "Even"],
+    "unidade": ["g", "kg"]
+  },
+  {
+    "corredor": "Higiene",
+    "produto": "Desodorante",
+    "keyword": "desodorante antitranspirante",
+    "obrigatorias": ["desodorante"],
+    "marcas": ["Rexona", "Nivea", "Dove", "Above", "Axe", "Adidas", "Bozzano"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Higiene",
+    "produto": "Papel higiênico",
+    "keyword": "papel higiênico folha dupla",
+    "obrigatorias": ["papel higiênico", "higiênico"],
+    "marcas": ["Neve", "Personal", "Mili", "Scott", "Cotton", "Sublime", "Qualité"],
+    "unidade": "rolos"
+  },
+  {
+    "corredor": "Mercearia",
+    "produto": "Café",
+    "keyword": "café torrado moído",
+    "obrigatorias": ["café"],
+    "marcas": ["Pilão", "3 Corações", "Melitta", "L'Or", "Caboclo", "Orfeu", "Santa Clara"],
+    "unidade": ["g", "kg"]
+  },
+  {
+    "corredor": "Mercearia",
+    "produto": "Filtro Papel Café",
+    "keyword": "filtro papel café",
+    "obrigatorias": ["filtro", "papel", "café"],
+    "marcas": ["Café Sol", "Pilão", "3 Corações", "Melitta", "L'Or", "Caboclo", "Orfeu", "Santa Clara"],
+    "unidade": ["un"]
+  },
+  {
+    "corredor": "Mercearia",
+    "produto": "Macarrão",
+    "keyword": "macarrão",
+    "obrigatorias": ["macarrão", "instantâneo"],
+    "marcas": ["Renata", "Adria", "Petybon", "Knorr", "Barilla"],
+    "unidade": "un"
+  },
+  {
+    "corredor": "Mercearia",
+    "produto": "óleo de soja",
+    "keyword": "óleo de soja",
+    "obrigatorias": ["óleo", "soja"],
+    "marcas": ["Liza", "Soya", "Concórdia", "Lisa", "ABC", "Coamo", "Sinhá"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Mercearia",
+    "produto": "azeite extra virgem",
+    "keyword": "azeite extra virgem",
+    "obrigatorias": ["azeite", "extra", "virgem"],
+    "marcas": ["Gallo", "Andorinha", "Borges", "Carbonell", "Cocinero", "Filippo Berio", "Herdade do Esporão"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Mercearia",
+    "produto": "vinagre de álcool branco",
+    "keyword": "vinagre de álcool branco",
+    "obrigatorias": ["vinagre", "álcool", "branco"],
+    "marcas": ["Castelo", "Toscano", "Minhoto", "Heinz", "Kikkoman", "Predilecta", "Sakura"],
+    "unidade": ["ml", "l"]
+  },
+  {
+    "corredor": "Utilidades",
+    "produto": "Potes plásticos",
+    "keyword": "pote plástico tampa cozinha",
+    "obrigatorias": ["pote"],
+    "marcas": ["Plasútil", "Sanremo", "Tupperware", "Nitron", "Coza", "Paramount", "Jaguar"],
+    "unidade": "un"
+  },
+  {
+    "corredor": "Utilidades",
+    "produto": "Organizadores gaveta",
+    "keyword": "organizador gaveta cozinha",
+    "obrigatorias": ["organizador"],
+    "marcas": ["Ordene", "Coza", "Paramount", "Arthi", "Ou", "Plasútil", "Jaguar"],
+    "unidade": "un"
+  },
+  {
+    "corredor": "Utilidades",
+    "produto": "Balde",
+    "keyword": "balde plástico limpeza",
+    "obrigatorias": ["balde"],
+    "marcas": ["Sanremo", "Plasvale", "Arqplast", "Jaguar", "Vonder", "Bettanin", "Condor"],
+    "unidade": "un"
+  },
+  {
+    "corredor": "Utilidades",
+    "produto": "Mop",
+    "keyword": "mop giratório limpeza",
+    "obrigatorias": ["mop"],
+    "marcas": ["Bettanin", "Flash Limp", "Noviça", "Condor", "Mor", "EsfreBom", "Perfect"],
+    "unidade": "un"
+  },
+  {
+    "corredor": "Utilidades",
+    "produto": "Utensílios cozinha",
+    "keyword": "kit utensílios cozinha silicone",
+    "obrigatorias": ["utensílio", "cozinha"],
+    "marcas": ["Tramontina", "Brinox", "Mimo Style", "Clink", "Hauskraft", "Mor", "Oxford"],
+    "unidade": "un"
+  }
+]

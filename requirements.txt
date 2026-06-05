@@ -1,0 +1,18 @@
+# ── Núcleo ───────────────────────────────────────────────────────────────────
+requests>=2.31           # coleta ML (JSON /ofertas) + Shopee + links afiliado
+python-dotenv>=1.0       # carrega .env
+psycopg[binary]>=3.1     # PostgreSQL (driver moderno, suporta batch)
+openpyxl>=3.1            # geração de Excel (relatórios)
+
+# ── Coleta ML — fallback opcional (só se a /ofertas exigir navegador) ─────────
+# Mantido fora do núcleo pra não pesar a VM de 1GB. Instale sob demanda:
+#   pip install playwright playwright-stealth && playwright install chromium
+# playwright
+# playwright-stealth
+
+# ── Controle (Telegram) ──────────────────────────────────────────────────────
+# O kill-switch da Fase 0 usa requests direto na API do Telegram (getUpdates /
+# sendMessage), sem dependência pesada. python-telegram-bot só se virar bot interativo.
+
+# ── Dev / testes ─────────────────────────────────────────────────────────────
+pytest>=8.0

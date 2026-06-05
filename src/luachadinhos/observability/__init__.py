@@ -1,0 +1,1 @@
+"""Observabilidade: logging e métricas."""

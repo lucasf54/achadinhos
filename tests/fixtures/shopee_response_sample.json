@@ -1,0 +1,64 @@
+{
+  "data": {
+    "productOfferV2": {
+      "nodes": [
+        {
+          "itemId": 12345678,
+          "shopId": 87654321,
+          "productName": "Fone Bluetooth TWS Pro 5.0 com Cancelamento de Ruído",
+          "priceMin": 49.90,
+          "priceMax": 89.90,
+          "priceDiscountRate": 35,
+          "ratingStar": 4.7,
+          "sales": 15230,
+          "commissionRate": 12.5,
+          "shopName": "TechStore Oficial",
+          "imageUrl": "https://cf.shopee.com.br/file/abc123",
+          "offerLink": "https://shope.ee/abc123_affiliate"
+        },
+        {
+          "itemId": 23456789,
+          "shopId": 98765432,
+          "productName": "Fone de Ouvido Sem Fio Bluetooth Esportivo Prova D'Água",
+          "priceMin": 29.90,
+          "priceMax": 59.90,
+          "priceDiscountRate": 0.40,
+          "ratingStar": 4.3,
+          "sales": 8450,
+          "commissionRate": 0.10,
+          "shopName": "AudioMax",
+          "imageUrl": "https://cf.shopee.com.br/file/def456",
+          "offerLink": "https://shope.ee/def456_affiliate"
+        },
+        {
+          "itemId": 34567890,
+          "shopId": 11223344,
+          "productName": "Headphone Gamer RGB 7.1 Surround",
+          "priceMin": 78.50,
+          "priceMax": 78.50,
+          "priceDiscountRate": 0,
+          "ratingStar": 0,
+          "sales": 0,
+          "commissionRate": 9.5,
+          "shopName": "GameShop",
+          "imageUrl": "https://cf.shopee.com.br/file/ghi789",
+          "offerLink": "https://shope.ee/ghi789_affiliate"
+        },
+        {
+          "itemId": 0,
+          "shopId": 0,
+          "productName": "",
+          "priceMin": 0,
+          "priceMax": 0,
+          "priceDiscountRate": 0,
+          "ratingStar": 0,
+          "sales": 0,
+          "commissionRate": 0,
+          "shopName": "",
+          "imageUrl": "",
+          "offerLink": ""
+        }
+      ]
+    }
+  }
+}

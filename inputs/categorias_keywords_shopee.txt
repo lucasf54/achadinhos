@@ -1,0 +1,22 @@
+# Shopee — Keywords por Categoria
+# Formato: nome_categoria;keyword de busca
+# Uma linha por categoria. Linhas com # são comentários.
+# O nome da categoria é usado como rótulo no Excel e nas mensagens.
+
+1  moda;vestuario
+2  calçados;chinelos
+3  eletronicos;eletronicos
+4  eletrodomesticos;eletroportateis
+5  beleza;beleza
+6  casa;utilidades domesticas
+7  perfumes;perfume
+8  esporte;esporte 
+10 ferramentas;ferramentas
+11 cachorro;cachorro
+12 gato;gato
+13 alimentos;alimentos
+13 bebes;bebes
+14 brinquedos;brinquedos
+15 games;games
+16 informatica;informatica
+17 celulares;celular

@@ -1,0 +1,31 @@
+[project]
+name = "luachadinhos"
+version = "0.1.0"
+description = "Lu Achadinhos 2.0 — esteira de inteligência de ofertas (ML + Shopee → WhatsApp)"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+    "psycopg[binary]>=3.1",
+    "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+playwright = ["playwright>=1.40", "playwright-stealth>=1.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+luachadinhos = "luachadinhos.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "network: testes que tocam a rede de verdade (opt-in, rodar com -m network)",
+]

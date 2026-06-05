@@ -1,0 +1,31 @@
+# ── Segredos — NUNCA versionar ───────────────────────────────────────────────
+.env
+secrets/
+*.key
+*_cookies.json
+ml_cookies.json
+
+# ── Dados efêmeros ───────────────────────────────────────────────────────────
+data/
+*.xlsx
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# ── Node (whatsapp-service) ──────────────────────────────────────────────────
+node_modules/
+whatsapp-service/auth/
+whatsapp-service/*.log
+
+# ── SO / editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

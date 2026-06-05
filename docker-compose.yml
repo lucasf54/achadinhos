@@ -1,0 +1,69 @@
+# ════════════════════════════════════════════════════════════════════════════
+#  Lu Achadinhos 2.0 — docker-compose
+#
+#  Pensado para VM de 1 GB: só `db` e `whatsapp` ficam residentes.
+#  O `app` é one-shot (profile "batch") — sobe no slot, roda, e MORRE.
+#  Nunca há app + chromium competindo com o resto pela RAM.
+#
+#  Uso:
+#    docker compose up -d db                      # sobe só o banco
+#    docker compose run --rm app db migrate       # aplica migrations
+#    docker compose run --rm app run-slot --slot dev --no-publish
+# ════════════════════════════════════════════════════════════════════════════
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: lu_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lu
+      POSTGRES_PASSWORD: lu
+      POSTGRES_DB: luachadinhos
+      TZ: America/Sao_Paulo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Teto de RAM defensivo p/ a Micro de 1 GB
+    deploy:
+      resources:
+        limits:
+          memory: 320M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lu -d luachadinhos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # App one-shot — NÃO sobe com `up`. Só via `run` (profile batch).
+  app:
+    build: .
+    image: luachadinhos-app
+    profiles: ["batch"]
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://lu:lu@db:5432/luachadinhos
+    volumes:
+      - ./secrets:/app/secrets:ro
+      - ./data:/app/data
+      - ./migrations:/app/migrations:ro
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # Micro-serviço WhatsApp (Node/Baileys) — entra na Fase F. Placeholder agora.
+  # whatsapp:
+  #   build: ./whatsapp-service
+  #   container_name: lu_whatsapp
+  #   restart: unless-stopped
+  #   ports: ["3000:3000"]
+  #   volumes: ["./whatsapp-service/auth:/app/auth"]
+  #   deploy: { resources: { limits: { memory: 256M } } }
+
+volumes:
+  pgdata:
