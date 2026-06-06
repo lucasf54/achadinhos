@@ -30,9 +30,18 @@ class TestTokenizar:
         assert "ouvido" in tokens
 
     def test_remove_pontuacao(self):
-        tokens = tokenizar("Kit 3-em-1 (Preto/Azul)")
+        # Pontuação vira espaço; "kit" permanece (distingue produto).
+        # Cores (preto/azul) são removidas de propósito (ruído de variação).
+        tokens = tokenizar("Kit 3-em-1 (Preto/Azul) Esponja")
         assert "kit" in tokens
-        assert "preto" in tokens
+        assert "esponja" in tokens
+        assert "preto" not in tokens  # cor é normalizada/ignorada
+        assert "azul" not in tokens
+
+    def test_ignora_voltagem(self):
+        a = tokenizar("Furadeira Bosch 750w 220v")
+        b = tokenizar("Furadeira Bosch 750w 127v")
+        assert a == b  # voltagem ignorada → tokens iguais
 
     def test_retorna_frozenset(self):
         result = tokenizar("teste")

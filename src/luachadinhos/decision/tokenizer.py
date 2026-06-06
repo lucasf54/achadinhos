@@ -18,17 +18,50 @@ _STOPWORDS = frozenset({
     "c", "p", "s",  # abreviações comuns
 })
 
+# "Ruído" que NÃO distingue produto: voltagem, cores, palavras de variação.
+# Remover antes de comparar faz "Bosch 127v" == "Bosch 220v" e
+# "Controle Preto" == "Controle Branco" (mesma oferta, variação diferente).
+_RUIDO = frozenset({
+    # voltagem
+    "127v", "220v", "110v", "12v", "bivolt", "127", "220", "110", "volts", "v",
+    # cores
+    "preto", "preta", "branco", "branca", "azul", "vermelho", "vermelha",
+    "rosa", "verde", "amarelo", "amarela", "cinza", "prata", "dourado",
+    "dourada", "roxo", "roxa", "laranja", "marrom", "bege", "carbon", "black",
+    "white", "blue", "red", "cor", "cores", "colorido",
+    # variação / embalagem genérica
+    # (NÃO incluir "kit"/"unidade" — distinguem produto: "Kit 4 Cuecas" ≠ "Cueca")
+    "original", "novo", "nova", "modelo", "tipo",
+})
+
+# Padrões de token que são puro código/medida (não distinguem o produto real)
+_RE_SO_NUMERO = re.compile(r"^\d+$")               # "700", "1300"
+_RE_CODIGO = re.compile(r"^[a-z]*\d+[a-z0-9]*$")    # "qat", "gws700", "l550b", "dgs1"
+_RE_VOLTAGEM = re.compile(r"^\d+v$")                # "127v", "220v"
+_RE_MEDIDA = re.compile(r"^\d+(w|mm|cm|kg|g|ml|l|hz|mah|gb|mp)$")  # "710w", "110mm"
+
 
 def _remover_acentos(texto: str) -> str:
     nfkd = unicodedata.normalize("NFKD", texto)
     return "".join(c for c in nfkd if not unicodedata.combining(c))
 
 
+def _eh_ruido(tok: str) -> bool:
+    return (
+        tok in _STOPWORDS
+        or tok in _RUIDO
+        or _RE_SO_NUMERO.match(tok) is not None
+        or _RE_VOLTAGEM.match(tok) is not None
+        or _RE_MEDIDA.match(tok) is not None
+    )
+
+
 def tokenizar(titulo: str) -> frozenset[str]:
-    """Normaliza título em conjunto de tokens únicos."""
+    """Normaliza título em conjunto de tokens únicos, removendo ruído
+    (voltagem, cores, medidas, códigos) que não distingue o produto."""
     t = _remover_acentos(titulo.lower())
     t = re.sub(r"[^\w\s]", " ", t)
-    tokens = {tok for tok in t.split() if tok and tok not in _STOPWORDS and len(tok) > 1}
+    tokens = {tok for tok in t.split() if tok and len(tok) > 1 and not _eh_ruido(tok)}
     return frozenset(tokens)
 
 

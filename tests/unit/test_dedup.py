@@ -48,12 +48,22 @@ class TestDedupSimilares:
         assert resultado[0].plataforma == "shopee"
 
     def test_threshold_alto_mantem_mais(self):
+        # Produtos diferentes (não só cor — cor agora é normalizada/ignorada).
         produtos = [
-            _p("Fone Bluetooth TWS Pro 5.0 Preto", desconto=30),
-            _p("Fone Bluetooth TWS Pro 5.0 Branco", desconto=25),
+            _p("Fone Bluetooth TWS Pro Esportivo", desconto=30),
+            _p("Caixa Som Bluetooth Portátil Grave", desconto=25),
         ]
         resultado = dedup_similares(produtos, threshold=0.95)
         assert len(resultado) == 2  # threshold alto = mais permissivo
+
+    def test_ignora_voltagem_e_cor(self):
+        # Mesma oferta variando só voltagem/cor → dedup junta em 1.
+        produtos = [
+            _p("Esmerilhadeira Bosch GWS 700 220v", desconto=20),
+            _p("Esmerilhadeira Bosch GWS 700 127v", desconto=25),
+        ]
+        resultado = dedup_similares(produtos, threshold=0.55)
+        assert len(resultado) == 1  # voltagem ignorada → mesmo produto
 
     def test_lista_vazia(self):
         assert dedup_similares([], threshold=0.55) == []

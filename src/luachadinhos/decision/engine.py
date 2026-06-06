@@ -50,27 +50,62 @@ def _aplicar_desconto_real_batch(
         calcular_desconto_real(p, stats=stats, min_amostras=filtros.min_amostras_hist)
 
 
+# "Tipo de produto" — captura casos que o dedup por título não pega, como
+# 2 controles de Xbox descritos de formas diferentes. Cada entrada: (rótulo do
+# tipo, conjunto de termos que TODOS devem aparecer no título). Mais específico
+# primeiro. Só 1 produto por tipo é publicado no mesmo disparo.
+_TIPOS_PRODUTO: list[tuple[str, frozenset[str]]] = [
+    ("controle-xbox",      frozenset({"controle", "xbox"})),
+    ("controle-ps5",       frozenset({"controle", "ps5"})),
+    ("controle-ps4",       frozenset({"controle", "ps4"})),
+    ("joystick-ps5",       frozenset({"joystick", "ps5"})),
+    ("joystick-ps4",       frozenset({"joystick", "ps4"})),
+    ("esmerilhadeira",     frozenset({"esmerilhadeira"})),
+    ("liquidificador",     frozenset({"liquidificador"})),
+    ("air-fryer",          frozenset({"fryer"})),
+    ("cafeteira",          frozenset({"cafeteira"})),
+    ("fone-bluetooth",     frozenset({"fone", "bluetooth"})),
+]
+
+
+def _tipo_produto(p: Produto) -> str | None:
+    """Detecta o 'tipo' do produto pelo título (ou None se não casar nenhum)."""
+    from .tokenizer import garantir_tokens
+    tokens = garantir_tokens(p)
+    for rotulo, termos in _TIPOS_PRODUTO:
+        if termos <= tokens:  # todos os termos presentes
+            return rotulo
+    return None
+
+
 def _selecionar_top_n_diverso(
     produtos: list[Produto],
     top_n: int,
     max_por_nicho: int,
 ) -> list[Produto]:
-    """Seleciona top-N com diversidade por nicho.
+    """Seleciona top-N com diversidade por nicho E por tipo de produto.
 
-    Ordena por score decrescente. Aceita até max_por_nicho do mesmo nicho.
+    Ordena por score decrescente. Aceita até max_por_nicho do mesmo nicho,
+    e no máximo 1 do mesmo "tipo" (ex: 1 controle-xbox, 1 esmerilhadeira).
     """
     ordenados = sorted(produtos, key=lambda p: p.score or 0, reverse=True)
 
     selecionados: list[Produto] = []
     contagem_nicho: dict[str, int] = {}
+    tipos_vistos: set[str] = set()
 
     for p in ordenados:
         nicho = p.nicho or "Outros"
-        count = contagem_nicho.get(nicho, 0)
-        if count >= max_por_nicho:
+        if contagem_nicho.get(nicho, 0) >= max_por_nicho:
+            continue
+        # Máx 1 por tipo de produto (controle xbox, esmerilhadeira, etc)
+        tipo = _tipo_produto(p)
+        if tipo is not None and tipo in tipos_vistos:
             continue
         selecionados.append(p)
-        contagem_nicho[nicho] = count + 1
+        contagem_nicho[nicho] = contagem_nicho.get(nicho, 0) + 1
+        if tipo is not None:
+            tipos_vistos.add(tipo)
         if len(selecionados) >= top_n:
             break
 
