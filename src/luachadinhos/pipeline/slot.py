@@ -73,7 +73,10 @@ def executar_slot(
     """
     settings = get_settings()
     if filtros is None:
-        filtros = Filtros()
+        # Carrega filtros do banco (tabela config) — top_por_disparo, max_por_nicho,
+        # thresholds editáveis sem deploy. Cai nos defaults se o banco não responder.
+        from luachadinhos.config.runtime_config import carregar_filtros
+        filtros = carregar_filtros()
     # Sem categorias explícitas → carrega TODAS dos arquivos inputs/.
     # (fallback p/ MLB1051 só se os arquivos estiverem ausentes/vazios)
     if categorias_ml is None:
