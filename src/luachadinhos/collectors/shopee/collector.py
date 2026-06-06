@@ -18,6 +18,15 @@ from .parser import parsear_nodes, PRICE_DIVISOR_DEFAULT
 logger = logging.getLogger(__name__)
 
 
+def _cred(env_key: str, settings_attr: str) -> str:
+    """Lê credencial via get_settings() (com .env carregado); fallback os.getenv."""
+    try:
+        from luachadinhos.config.settings import get_settings
+        return getattr(get_settings(), settings_attr, "") or os.getenv(env_key, "")
+    except Exception:
+        return os.getenv(env_key, "")
+
+
 class ShopeeCollector:
     """Coleta ofertas da Shopee para uma ou mais keywords."""
 
@@ -30,8 +39,11 @@ class ShopeeCollector:
         limite_por_keyword: int = 30,
     ):
         self.filtros = filtros or Filtros()
-        self.app_id = app_id or os.getenv("SHOPEE_APP_ID", "")
-        self.secret = secret or os.getenv("SHOPEE_SECRET", "")
+        # Lê via get_settings() (garante .env carregado); fallback p/ os.getenv.
+        # Ler só com os.getenv no import pegava vazio quando o .env ainda não
+        # tinha sido carregado (mesmo bug que afetou o MATT_WORD do ML).
+        self.app_id = app_id or _cred("SHOPEE_APP_ID", "shopee_app_id")
+        self.secret = secret or _cred("SHOPEE_SECRET", "shopee_secret")
         self.price_divisor = price_divisor
         self.limite_por_keyword = limite_por_keyword
 

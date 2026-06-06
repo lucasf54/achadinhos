@@ -20,3 +20,14 @@
 15 games;games
 16 informatica;informatica
 17 celulares;celular
+# Utilidades domésticas — keywords específicas (cada uma ~30 produtos)
+18 utilidades;organizador
+19 utilidades;pote hermético
+20 utilidades;cabide
+21 utilidades;lixeira
+22 utilidades;cesto roupa
+23 utilidades;tábua de corte
+24 utilidades;escorredor de louça
+25 utilidades;porta temperos
+26 utilidades;organizador de gaveta
+27 utilidades;panela antiaderente
