@@ -78,6 +78,38 @@ def _tipo_produto(p: Produto) -> str | None:
     return None
 
 
+# Palavras de "tipo de oferta" que costumam abrir o título antes da marca real.
+_PREFIXO_GENERICO = frozenset({
+    "alimento", "racao", "kit", "perfume", "tenis", "fritadeira", "controle",
+    "fone", "smartphone", "celular", "rel", "relogio", "smartwatch", "cafeteira",
+})
+
+
+def _assinatura_marca(p: Produto) -> str:
+    """Assinatura 'marca + nicho': 1ª palavra significativa (a marca) + o nicho.
+
+    Ex: as 3 'Premier ... Hipoalergênico' (todas nicho Pet) → 'premier|Pet',
+    então só 1 entra no disparo. Mas 'Samsung' celular e 'Samsung' TV ficam
+    'samsung|Celulares' e 'samsung|TV & Vídeo' → ambos podem entrar (nichos
+    diferentes). Pula prefixos genéricos (Ração, Kit) pra chegar na marca real.
+    """
+    import re
+    import unicodedata
+    from .tokenizer import tokenizar
+    t = unicodedata.normalize("NFKD", p.titulo.lower())
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    t = re.sub(r"[^\w\s]", " ", t)
+    toks_validos = tokenizar(p.titulo)
+    validos = [w for w in t.split() if w in toks_validos]
+    i = 0
+    while i < len(validos) and validos[i] in _PREFIXO_GENERICO:
+        i += 1
+    if i >= len(validos):
+        return ""
+    marca = validos[i]
+    return f"{marca}|{p.nicho or 'Outros'}"
+
+
 def _selecionar_top_n_diverso(
     produtos: list[Produto],
     top_n: int,
@@ -93,6 +125,7 @@ def _selecionar_top_n_diverso(
     selecionados: list[Produto] = []
     contagem_nicho: dict[str, int] = {}
     tipos_vistos: set[str] = set()
+    marcas_vistas: set[str] = set()
 
     for p in ordenados:
         nicho = p.nicho or "Outros"
@@ -102,8 +135,14 @@ def _selecionar_top_n_diverso(
         tipo = _tipo_produto(p)
         if tipo is not None and tipo in tipos_vistos:
             continue
+        # Máx 1 por marca+linha (evita 3 "Premier Hipoalergênico" no disparo)
+        marca = _assinatura_marca(p)
+        if marca and marca in marcas_vistas:
+            continue
         selecionados.append(p)
         contagem_nicho[nicho] = contagem_nicho.get(nicho, 0) + 1
+        if marca:
+            marcas_vistas.add(marca)
         if tipo is not None:
             tipos_vistos.add(tipo)
         if len(selecionados) >= top_n:
