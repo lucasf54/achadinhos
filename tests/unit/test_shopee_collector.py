@@ -20,8 +20,10 @@ def nodes() -> list[dict]:
 
 
 class TestShopeeCollector:
-    @patch.dict("os.environ", {"SHOPEE_APP_ID": "", "SHOPEE_SECRET": ""})
-    def test_sem_credenciais_retorna_vazio(self):
+    @patch("luachadinhos.collectors.shopee.collector._cred", return_value="")
+    def test_sem_credenciais_retorna_vazio(self, _mock_cred):
+        # _cred mockado p/ vazio → simula ambiente sem credenciais
+        # (sem isso, _cred buscaria do .env real e o teste dependeria do ambiente)
         collector = ShopeeCollector(app_id="", secret="")
         produtos = collector.coletar(["fone bluetooth"])
         assert produtos == []

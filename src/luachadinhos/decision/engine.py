@@ -115,10 +115,13 @@ def _selecionar_top_n_diverso(
     top_n: int,
     max_por_nicho: int,
 ) -> list[Produto]:
-    """Seleciona top-N com diversidade por nicho E por tipo de produto.
+    """Seleciona top-N priorizando 1 de cada nicho, depois completa por mérito.
 
-    Ordena por score decrescente. Aceita até max_por_nicho do mesmo nicho,
-    e no máximo 1 do mesmo "tipo" (ex: 1 controle-xbox, 1 esmerilhadeira).
+    Passada 1: o MELHOR de cada nicho (ordenados por score) → garante máxima
+    variedade (até top_n nichos diferentes).
+    Passada 2: se sobrar vaga, completa com os próximos melhores no geral
+    (respeitando max_por_nicho).
+    Ambas respeitam os anti-duplicados (tipo, código de modelo via dedup, marca+nicho).
     """
     ordenados = sorted(produtos, key=lambda p: p.score or 0, reverse=True)
 
@@ -126,27 +129,53 @@ def _selecionar_top_n_diverso(
     contagem_nicho: dict[str, int] = {}
     tipos_vistos: set[str] = set()
     marcas_vistas: set[str] = set()
+    nichos_cobertos: set[str] = set()
 
+    def _bloqueado(p: Produto) -> bool:
+        """True se p viola algum anti-duplicado (tipo / marca+nicho)."""
+        tipo = _tipo_produto(p)
+        if tipo is not None and tipo in tipos_vistos:
+            return True
+        marca = _assinatura_marca(p)
+        if marca and marca in marcas_vistas:
+            return True
+        return False
+
+    def _aceitar(p: Produto) -> None:
+        nicho = p.nicho or "Outros"
+        selecionados.append(p)
+        contagem_nicho[nicho] = contagem_nicho.get(nicho, 0) + 1
+        nichos_cobertos.add(nicho)
+        tipo = _tipo_produto(p)
+        if tipo is not None:
+            tipos_vistos.add(tipo)
+        marca = _assinatura_marca(p)
+        if marca:
+            marcas_vistas.add(marca)
+
+    # ── Passada 1: o melhor de cada nicho (1 por nicho), por ordem de score ──
     for p in ordenados:
+        if len(selecionados) >= top_n:
+            break
+        nicho = p.nicho or "Outros"
+        if nicho in nichos_cobertos:
+            continue  # nicho já tem 1 → fica pra passada 2
+        if _bloqueado(p):
+            continue
+        _aceitar(p)
+
+    # ── Passada 2: completa as vagas restantes por mérito (até max_por_nicho) ─
+    for p in ordenados:
+        if len(selecionados) >= top_n:
+            break
+        if p in selecionados:
+            continue
         nicho = p.nicho or "Outros"
         if contagem_nicho.get(nicho, 0) >= max_por_nicho:
             continue
-        # Máx 1 por tipo de produto (controle xbox, esmerilhadeira, etc)
-        tipo = _tipo_produto(p)
-        if tipo is not None and tipo in tipos_vistos:
+        if _bloqueado(p):
             continue
-        # Máx 1 por marca+linha (evita 3 "Premier Hipoalergênico" no disparo)
-        marca = _assinatura_marca(p)
-        if marca and marca in marcas_vistas:
-            continue
-        selecionados.append(p)
-        contagem_nicho[nicho] = contagem_nicho.get(nicho, 0) + 1
-        if marca:
-            marcas_vistas.add(marca)
-        if tipo is not None:
-            tipos_vistos.add(tipo)
-        if len(selecionados) >= top_n:
-            break
+        _aceitar(p)
 
     return selecionados
 
