@@ -27,11 +27,13 @@ MAPA_NICHOS: dict[str, list[str | tuple[str, ...]]] = {
         "lixeira", "tabua", "escorredor", "ralador", "descascador",
         ("porta", "temperos"), "talheres", "utensilio", "utensilios",
         "tupperware", "varal", "prendedor",
-        "panela", "frigideira", "assadeira",
+        "panela", "panelas", "frigideira", "assadeira",
+        ("garrafa", "termica"), "squeeze", "marmita", "cesto",
     ],
     "Celulares": [
         "celular", "smartphone", "iphone", "galaxy", "xiaomi",
         "motorola", "redmi", "poco",
+        "smartwatch", "smartband", "relogio inteligente",
     ],
     "Informática": [
         "notebook", "laptop", "computador", "pc", "monitor",
@@ -134,18 +136,25 @@ _CATEGORIA_NICHO: dict[str, str] = {
 
 
 def classificar_nicho(produto: Produto) -> str:
-    """Classifica o nicho do produto (cascata: tokens → mapa → categoria → Outros)."""
-    tokens = garantir_tokens(produto)
-    texto_lower = " ".join(tokens)
+    """Classifica o nicho do produto (cascata: tokens → mapa → categoria → Outros).
 
-    # 1. Busca no mapa por tokens do título
+    Compara por TOKEN INTEIRO (não substring) — senão 'xbox' casa em 'Foxbox',
+    'termometro' em qualquer coisa, etc. Palavras-chave com espaço viram tupla
+    (todas as sub-palavras devem ser tokens presentes).
+    """
+    tokens = garantir_tokens(produto)  # frozenset de palavras inteiras
+
+    # 1. Busca no mapa por tokens do título (match de palavra inteira)
     for nicho, palavras in MAPA_NICHOS.items():
         for palavra in palavras:
             if isinstance(palavra, tuple):
-                if all(p in texto_lower for p in palavra):
+                if all(p in tokens for p in palavra):
                     return nicho
-            elif palavra in texto_lower:
-                return nicho
+            else:
+                # palavra-chave pode ter espaço (ex: "air fryer") → todas presentes
+                partes = palavra.split()
+                if all(parte in tokens for parte in partes):
+                    return nicho
 
     # 2. Fallback por categoria de origem
     cat = produto.categoria.upper()
