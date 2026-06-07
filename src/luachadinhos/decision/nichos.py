@@ -18,6 +18,15 @@ logger = logging.getLogger(__name__)
 # Mapa de tokens → nicho (mais específico primeiro)
 # Cada chave pode ser uma palavra ou tupla de palavras (todas devem bater)
 MAPA_NICHOS: dict[str, list[str | tuple[str, ...]]] = {
+    # Utilidades domésticas — ANTES de Casa & Decoração (tem prioridade na cascata).
+    # Itens de organização/cozinha que o usuário quer garantir presença.
+    "Utilidades": [
+        "organizador", "pote", "potes", "hermetico", "cabide", "cabides",
+        "lixeira", "cesto", "tabua", "escorredor", "ralador", "descascador",
+        "porta temperos", "porta-temperos", "talheres", "utensilio", "utensilios",
+        "vasilha", "tupperware", "balde", "bacia", "varal", "prendedor",
+        "panela", "frigideira", "assadeira", "forma", "jogo de copos",
+    ],
     "Celulares": [
         "celular", "smartphone", "iphone", "galaxy", "xiaomi",
         "motorola", "redmi", "poco",
@@ -60,7 +69,7 @@ MAPA_NICHOS: dict[str, list[str | tuple[str, ...]]] = {
     "Casa & Decoração": [
         "colchao", "travesseiro", "lencol", "cortina",
         "luminaria", "moveis", "sofa", "mesa", "cadeira",
-        "organizador", "prateleira",
+        "prateleira", "tapete", "quadro", "almofada",
     ],
     "Pet": [
         "pet", "cachorro", "gato", "racao", "coleira",
