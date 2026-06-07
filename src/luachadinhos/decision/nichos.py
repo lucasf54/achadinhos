@@ -21,11 +21,13 @@ MAPA_NICHOS: dict[str, list[str | tuple[str, ...]]] = {
     # Utilidades domésticas — ANTES de Casa & Decoração (tem prioridade na cascata).
     # Itens de organização/cozinha que o usuário quer garantir presença.
     "Utilidades": [
-        "organizador", "pote", "potes", "hermetico", "cabide", "cabides",
-        "lixeira", "cesto", "tabua", "escorredor", "ralador", "descascador",
-        "porta temperos", "porta-temperos", "talheres", "utensilio", "utensilios",
-        "vasilha", "tupperware", "balde", "bacia", "varal", "prendedor",
-        "panela", "frigideira", "assadeira", "forma", "jogo de copos",
+        # Evitar palavras ambíguas ("forma" casa "em forma de"; "bacia" raro).
+        # Compostas viram tupla (todas as palavras devem aparecer).
+        "organizador", "hermetico", "cabide", "cabides",
+        "lixeira", "tabua", "escorredor", "ralador", "descascador",
+        ("porta", "temperos"), "talheres", "utensilio", "utensilios",
+        "tupperware", "varal", "prendedor",
+        "panela", "frigideira", "assadeira",
     ],
     "Celulares": [
         "celular", "smartphone", "iphone", "galaxy", "xiaomi",
